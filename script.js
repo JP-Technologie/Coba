@@ -2,7 +2,103 @@
 // COBA — shared interactions
 // ============================================
 
+function startDemoSession(name) {
+  sessionStorage.setItem('cobaDemoSession', JSON.stringify({ name }));
+  window.location.assign('dashboard.html');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+
+  /* ---------- Demo protected-page session gate ---------- */
+  const dashboardApp = document.getElementById('dashboardApp');
+  const transferApp = document.getElementById('transferApp');
+  let demoSession = null;
+  if (dashboardApp || transferApp) {
+    try {
+      demoSession = JSON.parse(sessionStorage.getItem('cobaDemoSession'));
+    } catch (error) {
+      demoSession = null;
+    }
+
+    if (!demoSession || typeof demoSession.name !== 'string') {
+      window.location.replace('login.html');
+      return;
+    }
+  }
+
+  if (dashboardApp) {
+    document.getElementById('dashboardName').textContent = demoSession.name;
+    document.getElementById('dashboardGreeting').textContent = demoSession.name.split(/\s+/)[0];
+    document.getElementById('dashboardInitials').textContent = demoSession.name
+      .split(/\s+/).filter(Boolean).map(part => part.charAt(0)).join('').slice(0, 2).toUpperCase();
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('cobaDemoSession');
+      window.location.assign('login.html');
+    });
+  }
+
+  /* ---------- Demo transfer review ---------- */
+  const transferForm = document.getElementById('transferForm');
+  if (transferForm) {
+    const reviewPanel = document.getElementById('transferReview');
+    const receiptPanel = document.getElementById('transferReceipt');
+    const transferFields = {
+      recipient: document.getElementById('recipientName'),
+      bank: document.getElementById('recipientBank'),
+      account: document.getElementById('accountNumber'),
+      amount: document.getElementById('transferAmount')
+    };
+    let transferDetails;
+
+    transferForm.addEventListener('submit', event => {
+      event.preventDefault();
+      if (!transferForm.reportValidity()) return;
+
+      transferDetails = {
+        recipient: transferFields.recipient.value.trim(),
+        bank: transferFields.bank.selectedOptions[0].textContent,
+        account: transferFields.account.value.trim(),
+        amount: Number(transferFields.amount.value)
+      };
+      document.getElementById('reviewRecipient').textContent = transferDetails.recipient;
+      document.getElementById('reviewBank').textContent = transferDetails.bank;
+      document.getElementById('reviewAccount').textContent = `••••••${transferDetails.account.slice(-4)}`;
+      document.getElementById('reviewAmount').textContent = new Intl.NumberFormat('en-NG', {
+        style: 'currency', currency: 'NGN', minimumFractionDigits: 2
+      }).format(transferDetails.amount);
+      transferForm.hidden = true;
+      reviewPanel.hidden = false;
+      reviewPanel.focus();
+    });
+
+    document.getElementById('editTransferBtn').addEventListener('click', () => {
+      reviewPanel.hidden = true;
+      transferForm.hidden = false;
+      transferFields.recipient.focus();
+    });
+
+    document.getElementById('confirmTransferBtn').addEventListener('click', event => {
+      const confirmButton = event.currentTarget;
+      confirmButton.disabled = true;
+      confirmButton.textContent = 'Preparing demo receipt…';
+
+      window.setTimeout(() => {
+        document.getElementById('receiptRecipient').textContent = transferDetails.recipient;
+        document.getElementById('receiptBank').textContent = transferDetails.bank;
+        document.getElementById('receiptAccount').textContent = `••••••${transferDetails.account.slice(-4)}`;
+        document.getElementById('receiptAmount').textContent = new Intl.NumberFormat('en-NG', {
+          style: 'currency', currency: 'NGN', minimumFractionDigits: 2
+        }).format(transferDetails.amount);
+        document.getElementById('receiptReference').textContent = `DEMO-${Date.now()}`;
+        document.getElementById('receiptDate').textContent = new Intl.DateTimeFormat('en-NG', {
+          dateStyle: 'medium', timeStyle: 'short'
+        }).format(new Date());
+        reviewPanel.hidden = true;
+        receiptPanel.hidden = false;
+        receiptPanel.focus();
+      }, 350);
+    });
+  }
 
   /* ---------- Hero "Beam" animation (landing page) ---------- */
   const curve = document.getElementById('beamCurve');
@@ -152,9 +248,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (valid) {
         const msg = document.getElementById('formMsg');
-        document.getElementById('formMsgText').textContent = 'Logged in successfully — redirecting…';
+        document.getElementById('formMsgText').textContent = 'Demo sign-in complete — opening dashboard…';
         msg.classList.add('show');
         loginForm.querySelector('button[type="submit"]').textContent = 'Logging in…';
+        const accountName = email.value.trim().includes('@')
+          ? email.value.trim().split('@')[0].replace(/[._-]+/g, ' ')
+          : 'Demo user';
+        const displayName = accountName.split(/\s+/).filter(Boolean)
+          .map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+        window.setTimeout(() => startDemoSession(displayName), 450);
       }
     });
   }
@@ -376,6 +478,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       const submitBtn = loginForm.querySelector('button[type="submit"]');
       if (submitBtn) submitBtn.textContent = 'Redirecting…';
+      window.setTimeout(() => startDemoSession(name), 450);
     }
   }
 
