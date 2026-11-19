@@ -3,17 +3,110 @@
 // ============================================
 
 function startDemoSession(name) {
+  sessionStorage.removeItem('cobaPendingDemoOtp');
   sessionStorage.setItem('cobaDemoSession', JSON.stringify({ name }));
   window.location.assign('dashboard.html');
 }
 
+function beginDemoVerification(name, contact) {
+  const loginForm = document.getElementById('loginForm');
+  const otpPanel = document.getElementById('otpPanel');
+  if (!loginForm || !otpPanel) {
+    startDemoSession(name);
+    return;
+  }
+
+  sessionStorage.setItem('cobaPendingDemoOtp', JSON.stringify({ name, code: '123456' }));
+  const destination = contact.includes('@')
+    ? `${contact.charAt(0)}••••@${contact.split('@')[1]}`
+    : `••••${contact.slice(-2)}`;
+  document.getElementById('otpDestination').textContent = destination;
+  document.getElementById('otpInput').value = '';
+  document.getElementById('otpStatus').textContent = '';
+  loginForm.hidden = true;
+  otpPanel.hidden = false;
+  document.getElementById('otpInput').focus();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+
+  /* ---------- Persistent display theme ---------- */
+  const themeToggle = document.createElement('button');
+  themeToggle.type = 'button';
+  themeToggle.className = 'theme-toggle';
+  themeToggle.setAttribute('aria-pressed', 'false');
+  themeToggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.4A8.5 8.5 0 0 1 8.6 3.8 8.6 8.6 0 1 0 20.2 15.4Z"/></svg><span></span>';
+  document.body.appendChild(themeToggle);
+
+  function applyTheme(theme) {
+    const isDark = theme === 'dark';
+    document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+    themeToggle.setAttribute('aria-pressed', String(isDark));
+    themeToggle.setAttribute('aria-label', `Switch to ${isDark ? 'light' : 'dark'} mode`);
+    themeToggle.querySelector('span').textContent = isDark ? 'Light mode' : 'Dark mode';
+  }
+
+  let savedTheme = 'light';
+  try {
+    savedTheme = localStorage.getItem('cobaTheme') === 'dark' ? 'dark' : 'light';
+  } catch (error) {
+    savedTheme = 'light';
+  }
+  applyTheme(savedTheme);
+
+  themeToggle.addEventListener('click', () => {
+    const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    applyTheme(nextTheme);
+    try {
+      localStorage.setItem('cobaTheme', nextTheme);
+    } catch (error) {
+      // Theme still applies for this page view when storage is unavailable.
+    }
+  });
+
+  /* ---------- Local-only contact preview ---------- */
+  const contactForm = document.getElementById('contactForm');
+  if (contactForm) {
+    const contactPreview = document.getElementById('contactPreview');
+    contactForm.addEventListener('submit', event => {
+      event.preventDefault();
+      if (!contactForm.reportValidity()) return;
+      document.getElementById('contactPreviewName').textContent = document.getElementById('contactName').value.trim();
+      document.getElementById('contactPreviewTopic').textContent = document.getElementById('contactTopic').value;
+      document.getElementById('contactPreviewMessage').textContent = document.getElementById('contactMessage').value.trim();
+      contactForm.hidden = true;
+      contactPreview.hidden = false;
+      contactPreview.focus();
+    });
+
+    document.getElementById('editContactMessage').addEventListener('click', () => {
+      contactPreview.hidden = true;
+      contactForm.hidden = false;
+      document.getElementById('contactMessage').focus();
+    });
+  }
+
+  /* ---------- Demo inactivity sign-out notice ---------- */
+  if (sessionStorage.getItem('cobaDemoLogoutReason') === 'inactivity') {
+    const formMsg = document.getElementById('formMsg');
+    const formMsgText = document.getElementById('formMsgText');
+    if (formMsg && formMsgText) {
+      formMsgText.textContent = 'Demo session ended after 10 minutes of inactivity.';
+      formMsg.classList.add('show');
+    }
+    sessionStorage.removeItem('cobaDemoLogoutReason');
+  }
 
   /* ---------- Demo protected-page session gate ---------- */
   const dashboardApp = document.getElementById('dashboardApp');
   const transferApp = document.getElementById('transferApp');
+  const transactionsApp = document.getElementById('transactionsApp');
+  const vaultApp = document.getElementById('vaultApp');
+  const billsApp = document.getElementById('billsApp');
+  const cardsApp = document.getElementById('cardsApp');
+  const profileApp = document.getElementById('profileApp');
   let demoSession = null;
-  if (dashboardApp || transferApp) {
+  if (dashboardApp || transferApp || transactionsApp || vaultApp || billsApp || cardsApp || profileApp) {
     try {
       demoSession = JSON.parse(sessionStorage.getItem('cobaDemoSession'));
     } catch (error) {
@@ -24,6 +117,51 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.replace('login.html');
       return;
     }
+
+    /* ---------- Demo inactivity auto-logout ---------- */
+    const inactivityTimeout = 10 * 60 * 1000;
+    const inactivityWarning = 60 * 1000;
+    let inactivityTimer;
+    let warningTimer;
+
+    function clearInactivityTimers() {
+      window.clearTimeout(inactivityTimer);
+      window.clearTimeout(warningTimer);
+    }
+
+    function logoutForInactivity() {
+      clearInactivityTimers();
+      sessionStorage.removeItem('cobaDemoSession');
+      sessionStorage.setItem('cobaDemoLogoutReason', 'inactivity');
+      window.location.assign('login.html');
+    }
+
+    function resetInactivityTimer() {
+      clearInactivityTimers();
+      const activeWarning = document.getElementById('inactivityWarning');
+      if (activeWarning) activeWarning.hidden = true;
+
+      warningTimer = window.setTimeout(() => {
+        if (activeWarning) activeWarning.hidden = false;
+      }, inactivityTimeout - inactivityWarning);
+      inactivityTimer = window.setTimeout(logoutForInactivity, inactivityTimeout);
+    }
+
+    ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(eventName => {
+      window.addEventListener(eventName, resetInactivityTimer, { passive: true });
+    });
+
+    if (!document.getElementById('inactivityWarning')) {
+      const warning = document.createElement('aside');
+      warning.id = 'inactivityWarning';
+      warning.className = 'inactivity-warning';
+      warning.hidden = true;
+      warning.setAttribute('role', 'status');
+      warning.innerHTML = '<strong>Demo session expiring</strong><span>You’ll be logged out soon due to inactivity. Move or type to stay signed in.</span>';
+      document.body.appendChild(warning);
+    }
+
+    resetInactivityTimer();
   }
 
   if (dashboardApp) {
@@ -98,6 +236,93 @@ document.addEventListener('DOMContentLoaded', () => {
         receiptPanel.focus();
       }, 350);
     });
+  }
+
+  /* ---------- Demo bill payments ---------- */
+  const billForm = document.getElementById('billForm');
+  if (billForm) {
+    const categoryButtons = Array.from(document.querySelectorAll('[data-bill-category]'));
+    const categoryInput = document.getElementById('billCategory');
+    const providerSelect = document.getElementById('billProvider');
+    const identifierLabel = document.getElementById('billIdentifierLabel');
+    const identifierInput = document.getElementById('billIdentifier');
+    const amountInput = document.getElementById('billAmount');
+    const review = document.getElementById('billReview');
+    const receipt = document.getElementById('billReceipt');
+
+    const providers = {
+      airtime: ['MTN', 'Airtel', 'Glo', '9mobile'],
+      data: ['MTN', 'Airtel', 'Glo', '9mobile'],
+      electricity: ['Ikeja Electric', 'Eko Electric', 'AEDC', 'PHED'],
+      tv: ['DSTV', 'GOtv', 'Startimes', 'Showmax']
+    };
+
+    function formatNaira(amount) {
+      return new Intl.NumberFormat('en-NG', {
+        style: 'currency', currency: 'NGN', minimumFractionDigits: 2
+      }).format(amount);
+    }
+
+    function selectCategory(category) {
+      categoryInput.value = category;
+      categoryButtons.forEach(button => {
+        const selected = button.dataset.billCategory === category;
+        button.classList.toggle('selected', selected);
+        button.setAttribute('aria-pressed', String(selected));
+      });
+
+      providerSelect.innerHTML = providers[category].map(name => `<option value="${name}">${name}</option>`).join('');
+      const labels = {
+        airtime: ['Phone number', 'Use a fictional phone number'],
+        data: ['Phone number', 'Use a fictional phone number'],
+        electricity: ['Meter number', 'Use a fictional meter number'],
+        tv: ['Smartcard/IUC number', 'Use a fictional subscriber number']
+      };
+      identifierLabel.textContent = labels[category][0];
+      identifierInput.placeholder = labels[category][1];
+      identifierInput.value = '';
+    }
+
+    categoryButtons.forEach(button => {
+      button.addEventListener('click', () => selectCategory(button.dataset.billCategory));
+    });
+
+    billForm.addEventListener('submit', event => {
+      event.preventDefault();
+      if (!billForm.reportValidity()) return;
+
+      document.getElementById('billReviewCategory').textContent = categoryInput.value.charAt(0).toUpperCase() + categoryInput.value.slice(1);
+      document.getElementById('billReviewProvider').textContent = providerSelect.value;
+      document.getElementById('billReviewIdentifier').textContent = `••••••${identifierInput.value.trim().slice(-4)}`;
+      document.getElementById('billReviewAmount').textContent = formatNaira(Number(amountInput.value));
+      billForm.hidden = true;
+      review.hidden = false;
+      review.focus();
+    });
+
+    document.getElementById('editBillBtn').addEventListener('click', () => {
+      review.hidden = true;
+      billForm.hidden = false;
+      identifierInput.focus();
+    });
+
+    document.getElementById('confirmBillBtn').addEventListener('click', event => {
+      const button = event.currentTarget;
+      button.disabled = true;
+      button.textContent = 'Preparing demo receipt…';
+      window.setTimeout(() => {
+        document.getElementById('billReceiptCategory').textContent = categoryInput.value.charAt(0).toUpperCase() + categoryInput.value.slice(1);
+        document.getElementById('billReceiptProvider').textContent = providerSelect.value;
+        document.getElementById('billReceiptIdentifier').textContent = `••••••${identifierInput.value.trim().slice(-4)}`;
+        document.getElementById('billReceiptAmount').textContent = formatNaira(Number(amountInput.value));
+        document.getElementById('billReceiptReference').textContent = `DEMO-BILL-${Date.now()}`;
+        review.hidden = true;
+        receipt.hidden = false;
+        receipt.focus();
+      }, 350);
+    });
+
+    selectCategory('airtime');
   }
 
   /* ---------- Hero "Beam" animation (landing page) ---------- */
@@ -226,8 +451,68 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ---------- Login form ---------- */
   const loginForm = document.getElementById('loginForm');
   if (loginForm) {
+    const maxAttempts = 3;
+    const lockDuration = 30 * 1000;
+    const attemptKey = 'cobaDemoLoginAttempts';
+    let attemptTimer;
+
+    function readAttempts() {
+      try {
+        return JSON.parse(localStorage.getItem(attemptKey)) || { count: 0, lockedUntil: 0 };
+      } catch (error) {
+        return { count: 0, lockedUntil: 0 };
+      }
+    }
+
+    function showLoginNotice(text, isError = false) {
+      const msg = document.getElementById('formMsg');
+      document.getElementById('formMsgText').textContent = text;
+      msg.classList.toggle('error', isError);
+      msg.classList.add('show');
+    }
+
+    function clearAttemptLimit() {
+      localStorage.removeItem(attemptKey);
+      if (attemptTimer) window.clearInterval(attemptTimer);
+      const submit = loginForm.querySelector('button[type="submit"]');
+      submit.disabled = false;
+      submit.textContent = 'Log in';
+    }
+
+    function startLockout(lockedUntil) {
+      const submit = loginForm.querySelector('button[type="submit"]');
+      submit.disabled = true;
+
+      const update = () => {
+        const remaining = Math.max(0, Math.ceil((lockedUntil - Date.now()) / 1000));
+        if (remaining === 0) {
+          clearAttemptLimit();
+          showLoginNotice('You can try signing in again.', false);
+          return;
+        }
+        submit.textContent = `Try again in ${remaining}s`;
+        showLoginNotice(`Too many attempts. Try again in ${remaining} seconds.`, true);
+      };
+
+      update();
+      attemptTimer = window.setInterval(update, 1000);
+    }
+
+    const existingAttempts = readAttempts();
+    if (existingAttempts.lockedUntil > Date.now()) {
+      startLockout(existingAttempts.lockedUntil);
+    } else if (existingAttempts.lockedUntil) {
+      clearAttemptLimit();
+    }
+
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
+      const attempts = readAttempts();
+      if (attempts.lockedUntil > Date.now()) {
+        startLockout(attempts.lockedUntil);
+        return;
+      }
+
       const email = document.getElementById('email');
       const password = document.getElementById('password');
       let valid = true;
@@ -246,18 +531,67 @@ document.addEventListener('DOMContentLoaded', () => {
         setInvalid(document.getElementById('passField'), false);
       }
 
-      if (valid) {
-        const msg = document.getElementById('formMsg');
-        document.getElementById('formMsgText').textContent = 'Demo sign-in complete — opening dashboard…';
-        msg.classList.add('show');
-        loginForm.querySelector('button[type="submit"]').textContent = 'Logging in…';
-        const accountName = email.value.trim().includes('@')
-          ? email.value.trim().split('@')[0].replace(/[._-]+/g, ' ')
-          : 'Demo user';
-        const displayName = accountName.split(/\s+/).filter(Boolean)
-          .map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
-        window.setTimeout(() => startDemoSession(displayName), 450);
+      if (!valid) {
+        const nextCount = attempts.count + 1;
+        if (nextCount >= maxAttempts) {
+          const lockedUntil = Date.now() + lockDuration;
+          localStorage.setItem(attemptKey, JSON.stringify({ count: nextCount, lockedUntil }));
+          startLockout(lockedUntil);
+        } else {
+          localStorage.setItem(attemptKey, JSON.stringify({ count: nextCount, lockedUntil: 0 }));
+          showLoginNotice(`${maxAttempts - nextCount} attempt${maxAttempts - nextCount === 1 ? '' : 's'} remaining.`, true);
+        }
+        return;
       }
+
+      clearAttemptLimit();
+      const accountName = email.value.trim().includes('@')
+        ? email.value.trim().split('@')[0].replace(/[._-]+/g, ' ')
+        : 'Demo user';
+      const displayName = accountName.split(/\s+/).filter(Boolean)
+        .map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+      clearAttemptLimit();
+      beginDemoVerification(displayName, email.value.trim());
+    });
+  }
+
+  /* ---------- Demo one-time-code challenge ---------- */
+  const otpForm = document.getElementById('otpForm');
+  if (otpForm) {
+    otpForm.addEventListener('submit', event => {
+      event.preventDefault();
+      if (!otpForm.reportValidity()) return;
+      let pending;
+      try {
+        pending = JSON.parse(sessionStorage.getItem('cobaPendingDemoOtp'));
+      } catch (error) {
+        pending = null;
+      }
+
+      const codeInput = document.getElementById('otpInput');
+      const status = document.getElementById('otpStatus');
+      if (!pending || typeof pending.name !== 'string') {
+        status.textContent = 'Start demo sign-in again to request a verification code.';
+        status.className = 'settings-status error';
+        return;
+      }
+      if (codeInput.value !== pending.code) {
+        status.textContent = 'That demo code does not match. Use the code shown above.';
+        status.className = 'settings-status error';
+        codeInput.select();
+        return;
+      }
+
+      status.textContent = 'Demo code verified. Opening the sample dashboard…';
+      status.className = 'settings-status success';
+      window.setTimeout(() => startDemoSession(pending.name), 350);
+    });
+
+    document.getElementById('otpBackBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('cobaPendingDemoOtp');
+      otpForm.closest('#otpPanel').hidden = true;
+      document.getElementById('loginForm').hidden = false;
+      document.getElementById('email').focus();
     });
   }
 
@@ -308,10 +642,226 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /* ---------- Demo transaction history ---------- */
+  const historySearch = document.getElementById('historySearch');
+  if (historySearch) {
+    const typeFilter = document.getElementById('historyType');
+    const periodFilter = document.getElementById('historyPeriod');
+    const rows = Array.from(document.querySelectorAll('.history-row'));
+    const emptyState = document.getElementById('historyEmpty');
+    const resultCount = document.getElementById('historyCount');
+
+    function filterHistory() {
+      const query = historySearch.value.trim().toLowerCase();
+      const type = typeFilter.value;
+      const period = periodFilter.value;
+      let visibleCount = 0;
+
+      rows.forEach(row => {
+        const searchable = row.textContent.toLowerCase();
+        const matchesQuery = !query || searchable.includes(query);
+        const matchesType = type === 'all' || row.dataset.type === type;
+        const matchesPeriod = period === 'all' || row.dataset.period === period;
+        const visible = matchesQuery && matchesType && matchesPeriod;
+        row.hidden = !visible;
+        if (visible) visibleCount++;
+      });
+
+      emptyState.hidden = visibleCount !== 0;
+      resultCount.textContent = `${visibleCount} sample transaction${visibleCount === 1 ? '' : 's'}`;
+    }
+
+    historySearch.addEventListener('input', filterHistory);
+    typeFilter.addEventListener('change', filterHistory);
+    periodFilter.addEventListener('change', filterHistory);
+  }
+
+  /* ---------- Demo savings vault ---------- */
+  const vaultForm = document.getElementById('vaultForm');
+  if (vaultForm) {
+    const vaultAmount = document.getElementById('vaultAmount');
+    const vaultName = document.getElementById('vaultName');
+    const vaultLock = document.getElementById('vaultLock');
+    const vaultPreview = document.getElementById('vaultPreview');
+    const vaultList = document.getElementById('vaultList');
+    const emptyVault = document.getElementById('emptyVault');
+
+    function formatNaira(amount) {
+      return new Intl.NumberFormat('en-NG', {
+        style: 'currency', currency: 'NGN', minimumFractionDigits: 2
+      }).format(amount);
+    }
+
+    function updatePreview() {
+      const amount = Number(vaultAmount.value);
+      if (!amount || amount <= 0) {
+        vaultPreview.textContent = 'Enter a sample amount';
+        return;
+      }
+      const dailyInterest = (amount * 0.12) / 365;
+      vaultPreview.textContent = `Illustrative daily interest: ${formatNaira(dailyInterest)} · 12% example rate`;
+    }
+
+    vaultAmount.addEventListener('input', updatePreview);
+
+    vaultForm.addEventListener('submit', event => {
+      event.preventDefault();
+      if (!vaultForm.reportValidity()) return;
+
+      const amount = Number(vaultAmount.value);
+      const lockDays = Number(vaultLock.value);
+      const name = vaultName.value.trim();
+      const unlockDate = new Date();
+      unlockDate.setDate(unlockDate.getDate() + lockDays);
+
+      const card = document.createElement('article');
+      card.className = 'vault-card';
+      card.innerHTML = `
+        <div class="vault-card-top"><span class="vault-icon" aria-hidden="true">₦</span><span class="vault-status">Demo locked</span></div>
+        <h3></h3>
+        <div class="vault-card-amount"></div>
+        <div class="vault-card-meta"><span>Illustrative 12% annual rate</span><span></span></div>
+      `;
+      card.querySelector('h3').textContent = name;
+      card.querySelector('.vault-card-amount').textContent = formatNaira(amount);
+      card.querySelector('.vault-card-meta span:last-child').textContent = `Unlocks ${unlockDate.toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+
+      vaultList.appendChild(card);
+      emptyVault.hidden = true;
+      vaultForm.reset();
+      updatePreview();
+      card.focus?.();
+    });
+  }
+
+  /* ---------- Demo cards ---------- */
+  const cardsFreezeBtn = document.getElementById('cardsFreezeBtn');
+  if (cardsFreezeBtn) {
+    const cardPreview = document.getElementById('demoCardPreview');
+    const cardState = document.getElementById('cardState');
+    let frozen = false;
+
+    cardsFreezeBtn.addEventListener('click', () => {
+      frozen = !frozen;
+      cardPreview.classList.toggle('frozen', frozen);
+      cardState.textContent = frozen ? 'Frozen · demo only' : 'Active · demo only';
+      cardsFreezeBtn.textContent = frozen ? 'Unfreeze card' : 'Freeze card';
+      cardsFreezeBtn.setAttribute('aria-pressed', String(frozen));
+    });
+
+    const requestForm = document.getElementById('requestCardForm');
+    const requestType = document.getElementById('requestCardType');
+    const requestConfirmation = document.getElementById('requestCardConfirmation');
+
+    requestForm.addEventListener('submit', event => {
+      event.preventDefault();
+      if (!requestForm.reportValidity()) return;
+      const cardType = requestType.options[requestType.selectedIndex].text;
+      document.getElementById('requestCardTypeText').textContent = cardType;
+      requestForm.hidden = true;
+      requestConfirmation.hidden = false;
+      requestConfirmation.focus();
+    });
+
+    document.getElementById('requestAnotherCardBtn').addEventListener('click', () => {
+      requestConfirmation.hidden = true;
+      requestForm.hidden = false;
+      requestType.focus();
+    });
+  }
+
+  /* ---------- Demo profile and settings ---------- */
+  const profileName = document.getElementById('profileName');
+  const profilePhone = document.getElementById('profilePhone');
+  const profileEmail = document.getElementById('profileEmail');
+  const profileForm = document.getElementById('profileForm');
+  const profileStatus = document.getElementById('profileStatus');
+  const passwordForm = document.getElementById('passwordForm');
+  const passwordStatus = document.getElementById('passwordStatus');
+  const notificationInputs = Array.from(document.querySelectorAll('[data-notification]'));
+
+  let savedProfile = {};
+  try {
+    savedProfile = JSON.parse(localStorage.getItem('cobaDemoProfile')) || {};
+  } catch (error) {
+    savedProfile = {};
+  }
+
+  profileName.value = savedProfile.name || demoSession.name;
+  profilePhone.value = savedProfile.phone || '';
+  profileEmail.value = savedProfile.email || '';
+  notificationInputs.forEach(input => {
+    input.checked = savedProfile[input.dataset.notification] !== false;
+  });
+
+  document.getElementById('profileHeaderName').textContent = profileName.value;
+  document.getElementById('profileInitials').textContent = profileName.value
+    .split(/\s+/).filter(Boolean).map(part => part.charAt(0)).join('').slice(0, 2).toUpperCase();
+
+  profileForm.addEventListener('submit', event => {
+    event.preventDefault();
+    if (!profileForm.reportValidity()) return;
+
+    const profile = {
+      name: profileName.value.trim(),
+      phone: profilePhone.value.trim(),
+      email: profileEmail.value.trim(),
+      transactions: document.getElementById('notificationTransactions').checked,
+      security: document.getElementById('notificationSecurity').checked,
+      marketing: document.getElementById('notificationMarketing').checked
+    };
+    localStorage.setItem('cobaDemoProfile', JSON.stringify(profile));
+    demoSession.name = profile.name;
+    sessionStorage.setItem('cobaDemoSession', JSON.stringify(demoSession));
+
+    document.getElementById('profileHeaderName').textContent = profile.name;
+    document.getElementById('profileInitials').textContent = profile.name
+      .split(/\s+/).filter(Boolean).map(part => part.charAt(0)).join('').slice(0, 2).toUpperCase();
+    profileStatus.textContent = 'Demo profile and notification preferences saved on this browser.';
+    profileStatus.className = 'settings-status success';
+  });
+
+  passwordForm.addEventListener('submit', event => {
+    event.preventDefault();
+    if (!passwordForm.reportValidity()) return;
+
+    const currentPassword = document.getElementById('currentPassword');
+    const newPassword = document.getElementById('newPassword');
+    const confirmPassword = document.getElementById('confirmPassword');
+
+    if (newPassword.value.length < 8) {
+      passwordStatus.textContent = 'Use at least 8 characters for the demo password.';
+      passwordStatus.className = 'settings-status error';
+      return;
+    }
+    if (newPassword.value !== confirmPassword.value) {
+      passwordStatus.textContent = 'The new password entries do not match.';
+      passwordStatus.className = 'settings-status error';
+      return;
+    }
+
+    passwordForm.reset();
+    passwordStatus.textContent = 'Demo validation passed. No real password or account credential was changed.';
+    passwordStatus.className = 'settings-status success';
+  });
+
+  document.getElementById('profileLogoutBtn').addEventListener('click', () => {
+    sessionStorage.removeItem('cobaDemoSession');
+    window.location.assign('login.html');
+  });
 });
 
-// ============================================
-// COBA — Google / Apple sign-in simulation
+/* ---------- Password show/hide toggle (for demo login/signup) ---------- */
+document.querySelectorAll('.toggle-pass').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const input = btn.closest('.input-wrap').querySelector('input');
+    const isPass = input.type === 'password';
+    input.type = isPass ? 'text' : 'password';
+    btn.textContent = isPass ? 'Hide' : 'Show';
+  });
+});
+
+/* ---------- Google / Apple sign-in simulation ---------- */
 // Demo-only front-end flow (no real OAuth backend).
 // See note at bottom for what's needed to go live.
 // ============================================
@@ -478,7 +1028,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       const submitBtn = loginForm.querySelector('button[type="submit"]');
       if (submitBtn) submitBtn.textContent = 'Redirecting…';
-      window.setTimeout(() => startDemoSession(name), 450);
+      beginDemoVerification(name, email);
     }
   }
 

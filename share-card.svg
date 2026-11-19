@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">Coba Demo</title>
+  <desc id="description">A digital banking interface prototype, not a financial institution.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071B3F"/>
+      <stop offset="1" stop-color="#0B3D91"/>
+    </linearGradient>
+    <pattern id="grid" width="44" height="44" patternUnits="userSpaceOnUse">
+      <path d="M44 0H0V44" fill="none" stroke="#fff" stroke-opacity=".055"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#background)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <circle cx="1030" cy="150" r="210" fill="none" stroke="#FFC72C" stroke-opacity=".16" stroke-width="2"/>
+  <circle cx="1060" cy="430" r="270" fill="none" stroke="#fff" stroke-opacity=".09" stroke-width="2"/>
+  <circle cx="1020" cy="280" r="70" fill="#FFC72C"/>
+  <circle cx="1080" cy="340" r="70" fill="#1E6FEB"/>
+  <text x="92" y="116" fill="#FFD75E" font-family="Arial,sans-serif" font-size="24" font-weight="700" letter-spacing="3">COBA · DEMO PROJECT</text>
+  <text x="88" y="300" fill="#fff" font-family="Arial,sans-serif" font-size="86" font-weight="700">Money tools,</text>
+  <text x="88" y="397" fill="#fff" font-family="Arial,sans-serif" font-size="86" font-weight="700">reimagined.</text>
+  <rect x="92" y="448" width="56" height="6" rx="3" fill="#FFC72C"/>
+  <text x="92" y="510" fill="#D5E2F3" font-family="Arial,sans-serif" font-size="25">A digital banking interface prototype</text>
+  <text x="92" y="566" fill="#AFC2DC" font-family="Arial,sans-serif" font-size="19">Not a licensed bank · No real funds or transactions</text>
+</svg>

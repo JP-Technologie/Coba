@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#071B3F">
+<title>Transactions — Coba Demo</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="dashboard-page">
+<div id="transactionsApp">
+  <header class="dashboard-header">
+    <a href="dashboard.html" class="logo" aria-label="Back to dashboard">
+      <span class="logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 30 30" width="30" height="30"><circle cx="13" cy="13" r="11" fill="#FFC72C"/><circle cx="17" cy="17" r="11" fill="#1E6FEB" opacity="0.92"/></svg>
+      </span>
+      Coba
+    </a>
+    <a href="dashboard.html" class="dashboard-logout">Back to overview</a>
+  </header>
+
+  <main class="dashboard-main history-layout">
+    <aside class="dashboard-demo-banner" role="note">
+      <span aria-hidden="true">!</span>
+      <div><strong>Demo project · Sample history only</strong>These transactions are fictional examples. No deposits, payments, or balances are real.</div>
+    </aside>
+
+    <div class="dashboard-heading">
+      <div><h1>Transaction history</h1><p>Search and filter your sample activity</p></div>
+      <span class="dashboard-sample-label" id="historyCount">8 sample transactions</span>
+    </div>
+
+    <section class="dashboard-panel history-panel">
+      <div class="history-toolbar">
+        <div class="history-search-wrap">
+          <label for="historySearch">Search transactions</label>
+          <input type="search" id="historySearch" placeholder="Name, category or reference" autocomplete="off">
+        </div>
+        <div class="history-filter">
+          <label for="historyType">Type</label>
+          <select id="historyType">
+            <option value="all">All activity</option>
+            <option value="incoming">Money in</option>
+            <option value="outgoing">Money out</option>
+          </select>
+        </div>
+        <div class="history-filter">
+          <label for="historyPeriod">Period</label>
+          <select id="historyPeriod">
+            <option value="all">All time</option>
+            <option value="today">Today</option>
+            <option value="week">Past 7 days</option>
+            <option value="month">Past 30 days</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="history-table-head" aria-hidden="true">
+        <span>Transaction</span><span>Status</span><span>Amount</span>
+      </div>
+      <div class="history-list" id="historyList">
+        <article class="history-row" data-type="incoming" data-period="today">
+          <div class="history-identity"><span class="history-mark incoming">↓</span><div><strong>Transfer from Ada N.</strong><small>Today · 10:42 AM · REF-DEMO-1081</small></div></div>
+          <span class="history-status">Completed</span><span class="history-amount incoming">+₦25,000.00</span>
+        </article>
+        <article class="history-row" data-type="outgoing" data-period="today">
+          <div class="history-identity"><span class="history-mark">↗</span><div><strong>Electricity payment</strong><small>Today · 8:15 AM · Ikeja Electric · REF-DEMO-1079</small></div></div>
+          <span class="history-status">Completed</span><span class="history-amount">−₦8,500.00</span>
+        </article>
+        <article class="history-row" data-type="incoming" data-period="week">
+          <div class="history-identity"><span class="history-mark incoming">↓</span><div><strong>Transfer from Chidi O.</strong><small>18 Nov · 9:05 AM · REF-DEMO-1072</small></div></div>
+          <span class="history-status">Completed</span><span class="history-amount incoming">+₦12,000.00</span>
+        </article>
+        <article class="history-row" data-type="outgoing" data-period="week">
+          <div class="history-identity"><span class="history-mark">↗</span><div><strong>Transfer to Zainab K.</strong><small>17 Nov · 2:30 PM · REF-DEMO-1068</small></div></div>
+          <span class="history-status">Completed</span><span class="history-amount">−₦18,750.00</span>
+        </article>
+        <article class="history-row" data-type="outgoing" data-period="week">
+          <div class="history-identity"><span class="history-mark">A</span><div><strong>Airtime purchase</strong><small>15 Nov · 7:12 PM · MTN · REF-DEMO-1054</small></div></div>
+          <span class="history-status">Completed</span><span class="history-amount">−₦5,000.00</span>
+        </article>
+        <article class="history-row" data-type="incoming" data-period="month">
+          <div class="history-identity"><span class="history-mark incoming">S</span><div><strong>Savings interest</strong><small>12 Nov · 12:00 AM · REF-DEMO-1038</small></div></div>
+          <span class="history-status">Completed</span><span class="history-amount incoming">+₦1,245.50</span>
+        </article>
+        <article class="history-row" data-type="outgoing" data-period="month">
+          <div class="history-identity"><span class="history-mark">D</span><div><strong>Data purchase</strong><small>8 Nov · 11:24 AM · 9mobile · REF-DEMO-1015</small></div></div>
+          <span class="history-status">Completed</span><span class="history-amount">−₦3,200.00</span>
+        </article>
+        <article class="history-row" data-type="outgoing" data-period="month">
+          <div class="history-identity"><span class="history-mark">T</span><div><strong>TV subscription</strong><small>1 Nov · 6:40 PM · DSTV · REF-DEMO-998</small></div></div>
+          <span class="history-status">Completed</span><span class="history-amount">−₦14,900.00</span>
+        </article>
+      </div>
+
+      <div class="history-empty" id="historyEmpty" hidden>
+        <strong>No transactions found</strong>
+        <span>Try changing your search or filters.</span>
+      </div>
+    </section>
+  </main>
+  <footer class="dashboard-footer">Coba Demo · Sample interface only · Not a licensed bank</footer>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

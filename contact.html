@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#071B3F">
+  <title>Contact — Coba Demo</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="legal-page">
+  <header class="dashboard-header">
+    <a href="index.html" class="logo" aria-label="Coba home"><span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 30 30" width="30" height="30"><circle cx="13" cy="13" r="11" fill="#FFC72C"/><circle cx="17" cy="17" r="11" fill="#1E6FEB" opacity="0.92"/></svg></span>Coba</a>
+    <a href="index.html" class="dashboard-logout">Back to home</a>
+  </header>
+
+  <main class="legal-main contact-main">
+    <aside class="dashboard-demo-banner" role="note"><span aria-hidden="true">!</span><div><strong>Prototype contact form</strong>This page has no support inbox. Submitting only previews a confirmation in your browser; no message is sent.</div></aside>
+    <div class="contact-layout">
+      <section class="contact-copy">
+        <span class="legal-kicker">Support</span>
+        <h1>Contact</h1>
+        <p>Have feedback about the Coba prototype? Use this local form to preview the interaction. Please do not include sensitive or personal information.</p>
+        <a href="help.html">Visit the Help Centre</a>
+      </section>
+
+      <section class="dashboard-panel contact-panel">
+        <form id="contactForm">
+          <div class="field">
+            <label for="contactName">Name</label>
+            <input id="contactName" name="name" type="text" autocomplete="name" maxlength="60" required>
+          </div>
+          <div class="field">
+            <label for="contactEmail">Email</label>
+            <input id="contactEmail" name="email" type="email" autocomplete="email" maxlength="120" required>
+          </div>
+          <div class="field">
+            <label for="contactTopic">Topic</label>
+            <select id="contactTopic" name="topic" required>
+              <option value="">Choose a topic</option>
+              <option>Website feedback</option>
+              <option>Demo feature question</option>
+              <option>Accessibility issue</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="contactMessage">Message</label>
+            <textarea id="contactMessage" name="message" rows="5" maxlength="1000" required placeholder="Please don't include passwords, PINs, account numbers, or other sensitive information."></textarea>
+          </div>
+          <p class="contact-demo-note">Submitting does not contact anyone. No form data is saved or transmitted.</p>
+          <div id="contactStatus" class="settings-status" aria-live="polite"></div>
+          <button type="submit" class="btn btn-primary btn-block">Preview message</button>
+        </form>
+        <section class="contact-preview" id="contactPreview" hidden aria-live="polite" aria-labelledby="contactPreviewTitle" tabindex="-1">
+          <h2 id="contactPreviewTitle">Local message preview</h2>
+          <p><strong id="contactPreviewName"></strong> · <span id="contactPreviewTopic"></span></p>
+          <p id="contactPreviewMessage"></p>
+          <p class="contact-demo-note">This was not sent or saved. The contact form is not connected to an inbox.</p>
+          <button type="button" class="btn btn-outline-blue btn-block" id="editContactMessage">Edit message</button>
+        </section>
+      </section>
+    </div>
+  </main>
+  <footer class="dashboard-footer">Coba Demo · Sample interface only · Not a licensed bank</footer>
+  <script src="script.js"></script>
+</body>
+</html>

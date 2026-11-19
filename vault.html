@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#071B3F">
+  <title>Savings Vault — Coba Demo</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dashboard-page">
+<div id="vaultApp">
+  <header class="dashboard-header">
+    <a href="dashboard.html" class="logo" aria-label="Back to dashboard">
+      <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 30 30" width="30" height="30"><circle cx="13" cy="13" r="11" fill="#FFC72C"/><circle cx="17" cy="17" r="11" fill="#1E6FEB" opacity="0.92"/></svg></span>
+      Coba
+    </a>
+    <a href="dashboard.html" class="dashboard-logout">Back to overview</a>
+  </header>
+
+  <main class="dashboard-main vault-layout">
+    <aside class="dashboard-demo-banner" role="note">
+      <span aria-hidden="true">!</span>
+      <div><strong>Demo savings · No real funds</strong>The vault is an interface example. It does not hold money, lock accounts, or pay interest.</div>
+    </aside>
+
+    <div class="dashboard-heading">
+      <div><h1>Savings Vault</h1><p>Create a visual lock for a fictional savings goal</p></div>
+      <span class="dashboard-sample-label">ILLUSTATIVE 12% RATE</span>
+    </div>
+
+    <div class="vault-grid">
+      <section class="dashboard-panel vault-create">
+        <div class="panel-title"><h2>Create a vault</h2></div>
+        <form id="vaultForm">
+          <div class="field">
+            <label for="vaultName">Vault name</label>
+            <input type="text" id="vaultName" placeholder="e.g. New laptop" maxlength="40" required>
+          </div>
+          <div class="field">
+            <label for="vaultAmount">Sample amount (NGN)</label>
+            <input type="number" id="vaultAmount" placeholder="10000.00" min="100" max="248750" step="100" inputmode="decimal" required>
+          </div>
+          <div class="field">
+            <label for="vaultLock">Lock period</label>
+            <select id="vaultLock" required>
+              <option value="30">30 days</option>
+              <option value="90">90 days</option>
+              <option value="180" selected>180 days</option>
+              <option value="365">365 days</option>
+            </select>
+          </div>
+          <div class="vault-preview" id="vaultPreview" aria-live="polite">Enter a sample amount</div>
+          <p class="vault-disclaimer">This rate is an interface example, not an offer or guarantee. A real vault requires verified balances and a server-side savings system.</p>
+          <button type="submit" class="btn btn-primary btn-block">Create demo vault</button>
+        </form>
+      </section>
+
+      <section class="dashboard-panel vault-summary">
+        <div class="panel-title"><h2>Your vaults</h2><span class="vault-sample-tag">Sample only</span></div>
+        <div class="vault-empty" id="emptyVault">
+          <div class="vault-empty-mark" aria-hidden="true">＋</div>
+          <strong>No vaults yet</strong>
+          <p>Create a vault to see how the demo could look.</p>
+        </div>
+        <div class="vault-list" id="vaultList"></div>
+      </section>
+    </div>
+  </main>
+  <footer class="dashboard-footer">Coba Demo · Sample interface only · Not a licensed bank</footer>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

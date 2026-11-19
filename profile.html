@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#071B3F">
+  <title>Profile &amp; Settings — Coba Demo</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dashboard-page">
+<div id="profileApp">
+  <header class="dashboard-header">
+    <a href="dashboard.html" class="logo" aria-label="Back to dashboard">
+      <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 30 30" width="30" height="30"><circle cx="13" cy="13" r="11" fill="#FFC72C"/><circle cx="17" cy="17" r="11" fill="#1E6FEB" opacity="0.92"/></svg></span>
+      Coba
+    </a>
+    <div class="dashboard-header-actions">
+      <div class="dashboard-user">
+        <span class="dashboard-avatar" id="profileInitials">DU</span>
+        <span id="profileHeaderName">Demo user</span>
+      </div>
+      <button type="button" class="dashboard-logout" id="profileLogoutBtn">Log out</button>
+    </div>
+  </header>
+
+  <main class="dashboard-main profile-layout">
+    <aside class="dashboard-demo-banner" role="note">
+      <span aria-hidden="true">!</span>
+      <div><strong>Demo settings · Browser storage only</strong>Changes remain in this browser. This prototype does not securely update a real account or password.</div>
+    </aside>
+
+    <div class="dashboard-heading">
+      <div><h1>Profile &amp; Settings</h1><p>Manage your fictional demo account</p></div>
+      <span class="dashboard-sample-label">LOCAL DEMO DATA</span>
+    </div>
+
+    <div class="profile-grid">
+      <section class="dashboard-panel settings-panel">
+        <div class="panel-title"><h2>Personal details</h2></div>
+        <form id="profileForm">
+          <div class="field">
+            <label for="profileName">Full name</label>
+            <input type="text" id="profileName" maxlength="60" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label for="profilePhone">Phone number</label>
+            <input type="tel" id="profilePhone" maxlength="20" autocomplete="tel" placeholder="Use a fictional phone number">
+          </div>
+          <div class="field">
+            <label for="profileEmail">Email address</label>
+            <input type="email" id="profileEmail" autocomplete="email" placeholder="demo@example.com">
+          </div>
+
+          <fieldset class="notification-group">
+            <legend>Notifications</legend>
+            <label class="notification-row">
+              <span><strong>Transaction alerts</strong><small>Sample incoming and outgoing activity</small></span>
+              <input type="checkbox" id="notificationTransactions" data-notification="transactions">
+            </label>
+            <label class="notification-row">
+              <span><strong>Security alerts</strong><small>Sample login and device notices</small></span>
+              <input type="checkbox" id="notificationSecurity" data-notification="security">
+            </label>
+            <label class="notification-row">
+              <span><strong>Product updates</strong><small>Demo news and feature messages</small></span>
+              <input type="checkbox" id="notificationMarketing" data-notification="marketing">
+            </label>
+          </fieldset>
+
+          <div id="profileStatus" class="settings-status" aria-live="polite"></div>
+          <button type="submit" class="btn btn-primary btn-block">Save demo profile</button>
+        </form>
+      </section>
+
+      <section class="dashboard-panel settings-panel">
+        <div class="panel-title"><h2>Change password</h2></div>
+        <form id="passwordForm">
+          <div class="field">
+            <label for="currentPassword">Current password</label>
+            <input type="password" id="currentPassword" placeholder="Do not enter a real password" autocomplete="current-password" required>
+          </div>
+          <div class="field">
+            <label for="newPassword">New password</label>
+            <input type="password" id="newPassword" minlength="8" placeholder="At least 8 characters" autocomplete="new-password" required>
+          </div>
+          <div class="field">
+            <label for="confirmPassword">Confirm new password</label>
+            <input type="password" id="confirmPassword" minlength="8" autocomplete="new-password" required>
+          </div>
+          <p class="password-warning">This is a front-end demo only. It does not validate or store real passwords.</p>
+          <div id="passwordStatus" class="settings-status" aria-live="polite"></div>
+          <button type="submit" class="btn btn-outline-blue btn-block">Validate demo password</button>
+        </form>
+      </section>
+    </div>
+  </main>
+  <footer class="dashboard-footer">Coba Demo · Sample interface only · Not a licensed bank</footer>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

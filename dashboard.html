@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#071B3F">
 <title>Dashboard — Coba Demo</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body class="dashboard-page">
@@ -20,10 +21,10 @@
       Coba
     </a>
     <div class="dashboard-header-actions">
-      <div class="dashboard-user">
+      <a class="dashboard-user" href="profile.html" aria-label="Open profile and settings">
         <span class="dashboard-avatar" id="dashboardInitials">DU</span>
         <span id="dashboardName">Demo user</span>
-      </div>
+      </a>
       <button type="button" class="dashboard-logout" id="logoutBtn">Log out</button>
     </div>
   </header>
@@ -56,25 +57,25 @@
             <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg>
             <span>Send</span><small>Demo only</small>
           </a>
-          <button type="button" class="quick-action" disabled aria-label="Savings vault, coming soon">
+          <a href="vault.html" class="quick-action" aria-label="Open Savings Vault demo">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14v12H5zM8 8V5h8v3M9 13h6M12 11v4"/></svg>
-            <span>Save</span><small>Coming next</small>
-          </button>
-          <button type="button" class="quick-action" disabled aria-label="Pay bills, coming soon">
+            <span>Save</span><small>Demo only</small>
+          </a>
+          <a href="bills.html" class="quick-action" aria-label="Open demo bill payments">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h4"/></svg>
-            <span>Pay bills</span><small>Coming next</small>
-          </button>
-          <button type="button" class="quick-action" disabled aria-label="Cards, coming soon">
+            <span>Pay bills</span><small>Demo only</small>
+          </a>
+          <a href="cards.html" class="quick-action" aria-label="Open demo cards">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/></svg>
-            <span>Card</span><small>Coming next</small>
-          </button>
+            <span>Card</span><small>Demo only</small>
+          </a>
         </div>
       </section>
 
       <section class="dashboard-panel transactions-panel" aria-labelledby="recentTitle">
         <div class="panel-title">
           <h2 id="recentTitle">Recent activity</h2>
-          <button type="button" class="dashboard-disabled-link" disabled>Full history · coming next</button>
+          <a href="transactions.html" class="dashboard-history-link">Full history</a>
         </div>
         <div class="transactions-list">
           <div class="transaction-row">

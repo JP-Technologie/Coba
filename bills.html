@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#071B3F">
+  <title>Pay bills — Coba Demo</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dashboard-page">
+<div id="billsApp">
+  <header class="dashboard-header">
+    <a href="dashboard.html" class="logo" aria-label="Back to dashboard">
+      <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 30 30" width="30" height="30"><circle cx="13" cy="13" r="11" fill="#FFC72C"/><circle cx="17" cy="17" r="11" fill="#1E6FEB" opacity="0.92"/></svg></span>
+      Coba
+    </a>
+    <a href="dashboard.html" class="dashboard-logout">Back to overview</a>
+  </header>
+
+  <main class="dashboard-main bills-layout">
+    <aside class="dashboard-demo-banner" role="note">
+      <span aria-hidden="true">!</span>
+      <div><strong>Demo payments · No providers contacted</strong>Enter fictional numbers only. No airtime, data, electricity, or TV payment will be purchased.</div>
+    </aside>
+
+    <div class="dashboard-heading">
+      <div><h1>Pay bills</h1><p>Prepare a fictional bill payment</p></div>
+      <span class="dashboard-sample-label">DEMO PAYMENT</span>
+    </div>
+
+    <section class="dashboard-panel bills-panel">
+      <div class="bill-categories" aria-label="Choose bill category">
+        <button type="button" class="bill-category selected" data-bill-category="airtime" aria-pressed="true">
+          <span aria-hidden="true">☎</span><strong>Airtime</strong><small>Mobile credit</small>
+        </button>
+        <button type="button" class="bill-category" data-bill-category="data" aria-pressed="false">
+          <span aria-hidden="true">⌁</span><strong>Data</strong><small>Internet bundle</small>
+        </button>
+        <button type="button" class="bill-category" data-bill-category="electricity" aria-pressed="false">
+          <span aria-hidden="true">ϟ</span><strong>Electricity</strong><small>Meter payment</small>
+        </button>
+        <button type="button" class="bill-category" data-bill-category="tv" aria-pressed="false">
+          <span aria-hidden="true">▣</span><strong>TV</strong><small>Subscription</small>
+        </button>
+      </div>
+
+      <form id="billForm" class="bill-form">
+        <input type="hidden" id="billCategory" value="airtime">
+        <div class="field">
+          <label for="billProvider">Provider</label>
+          <select id="billProvider" required></select>
+        </div>
+        <div class="field">
+          <label id="billIdentifierLabel" for="billIdentifier">Phone number</label>
+          <input type="text" id="billIdentifier" inputmode="numeric" maxlength="20" placeholder="Use a fictional phone number" required>
+        </div>
+        <div class="field">
+          <label for="billAmount">Amount (NGN)</label>
+          <input type="number" id="billAmount" min="100" max="100000" step="100" inputmode="decimal" placeholder="1000.00" required>
+        </div>
+        <p class="bills-warning">No provider lookup or payment will occur.</p>
+        <button type="submit" class="btn btn-primary btn-block">Review demo payment</button>
+      </form>
+
+      <section id="billReview" class="bill-state" tabindex="-1" hidden aria-labelledby="billReviewTitle">
+        <h2 id="billReviewTitle">Review payment</h2>
+        <p>Check this fictional payment before generating a demo receipt.</p>
+        <dl class="bill-summary">
+          <dt>Category</dt><dd id="billReviewCategory"></dd>
+          <dt>Provider</dt><dd id="billReviewProvider"></dd>
+          <dt>Identifier</dt><dd id="billReviewIdentifier"></dd>
+          <dt>Amount</dt><dd class="bill-summary-total" id="billReviewAmount"></dd>
+        </dl>
+        <div class="bills-warning">Confirming will not debit a balance or contact a provider.</div>
+        <div class="bill-buttons">
+          <button type="button" class="btn btn-outline-blue" id="editBillBtn">Edit details</button>
+          <button type="button" class="btn btn-primary" id="confirmBillBtn">Confirm demo</button>
+        </div>
+      </section>
+
+      <section id="billReceipt" class="bill-state" tabindex="-1" hidden aria-labelledby="billReceiptTitle" aria-live="polite">
+        <div class="bill-success-mark" aria-hidden="true">✓</div>
+        <h2 id="billReceiptTitle">Demo receipt generated</h2>
+        <p>No payment was made and no provider was contacted.</p>
+        <div class="bill-reference" id="billReceiptReference"></div>
+        <dl class="bill-summary">
+          <dt>Category</dt><dd id="billReceiptCategory"></dd>
+          <dt>Provider</dt><dd id="billReceiptProvider"></dd>
+          <dt>Identifier</dt><dd id="billReceiptIdentifier"></dd>
+          <dt>Sample amount</dt><dd class="bill-summary-total" id="billReceiptAmount"></dd>
+        </dl>
+        <div class="bill-buttons"><a href="dashboard.html" class="btn btn-primary">Back to dashboard</a></div>
+      </section>
+    </section>
+  </main>
+  <footer class="dashboard-footer">Coba Demo · Sample interface only · Not a licensed bank</footer>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

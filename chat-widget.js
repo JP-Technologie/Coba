@@ -41,7 +41,7 @@
       messages: [
         {
           role: 'bot',
-          text: "Hi, I'm the Coba Assistant \u2014 ask me about transfers, savings, cards, bills, or opening an account.",
+          text: "Hi, I'm the Coba Demo Assistant. I can explain the sample pages and features. This prototype is not a bank, and its balances and transactions are fictional.",
           time: Date.now()
         }
       ]
@@ -57,26 +57,32 @@
     const t = rawText.toLowerCase();
 
     const rules = [
-      { k: ['agent', 'human', 'representative', 'support team', 'talk to someone'],
-        r: "I can loop in a human teammate. Our support team is available 24/7 \u2014 tap 'Contact us' in the footer, or reply here and I'll flag this chat for a callback." },
-      { k: ['fee', 'charge', 'cost', 'free'],
-        r: "Coba has no monthly account fees and no charges on transfers between Coba users. Transfers to other banks carry the standard regulatory fee only \u2014 no markup from us." },
-      { k: ['transfer', 'send money', 'how long', 'speed'],
-        r: "Transfers to any Nigerian bank land in under 10 seconds, day or night \u2014 including weekends. Just add a recipient's account number in the app and confirm." },
+      { k: ['agent', 'human', 'representative', 'support team', 'talk to someone', 'contact us', 'help centre', 'help center'],
+        r: "The Help Centre has answers about this prototype. The Contact page has a local preview form, but no support inbox is connected and submitting it does not send a message. Please don't share personal or financial details here." },
+      { k: ['safe', 'secure', 'security', 'insured', 'insurance', 'licensed', 'license', 'trust'],
+        r: "Coba here is a website prototype, not a licensed bank or financial service. It does not hold or insure funds. Use fictional information only; browser demo storage is not suitable for sensitive data." },
+      { k: ['otp', 'verification code', 'one-time', 'one time', 'sms', 'email code'],
+        r: "Login verification is simulated. The test code 123456 is shown on the login page; no email or SMS is sent, and this is not real identity verification." },
+      { k: ['fee', 'fees', 'charge', 'cost', 'free'],
+        r: "This demo does not process payments, so it has no real transfer or bill-payment fees. No pricing for a real banking service is established here." },
+      { k: ['transfer', 'send money', 'how long', 'speed', 'receipt'],
+        r: "The Send page lets you enter fictional details, review them, and generate a sample receipt. It does not contact a bank, verify a recipient, or move money. The receipt is not proof of payment." },
       { k: ['saving', 'vault', 'interest', 'invest'],
-        r: "The Savings Vault pays interest daily instead of once a year. Lock any amount for a fixed period, or keep it flexible and withdraw anytime \u2014 your choice." },
+        r: "The Savings Vault creates a visual sample card. Its 12% rate and daily-interest figure are illustrative examples only; no funds are locked and no interest is paid." },
       { k: ['card', 'lost', 'stolen', 'freeze', 'block'],
-        r: "Sorry to hear that. Open the app, go to Card > Freeze card, and it's instantly disabled. You can request a replacement from the same screen, no branch visit needed." },
+        r: "The Cards page shows a fictional masked card. Freeze/unfreeze changes only its appearance in this browser page; it does not affect a real card. Card requests are not issued or shipped." },
       { k: ['bill', 'airtime', 'data', 'electricity', 'tv', 'subscription'],
-        r: "You can pay airtime, data, electricity and TV subscriptions right from the app, settled instantly with no extra charges." },
-      { k: ['safe', 'secure', 'security', 'insured', 'insurance', 'trust'],
-        r: "Coba is a licensed digital bank. Your funds are insured up to the regulatory limit, and every login is protected with biometric checks and real-time fraud alerts." },
+        r: "The Pay bills demo supports airtime, data, electricity, and TV sample forms. It does not contact providers or purchase a service; its receipt is only a visual example." },
+      { k: ['transaction', 'history', 'search', 'filter'],
+        r: "Transaction History contains fictional sample records. You can search them and filter by direction or time period; it is not connected to an account." },
+      { k: ['profile', 'settings', 'notification', 'phone number', 'change password'],
+        r: "Profile & Settings saves sample name, contact, and notification preferences in this browser. Password validation is only a UI demonstration and does not change a real credential." },
       { k: ['open account', 'sign up', 'signup', 'register', 'create account', 'get started'],
-        r: "Opening an account takes about 3 minutes \u2014 no paperwork or branch visit. Tap 'Open a free account', add your details, verify your ID with a selfie, and you're in." },
-      { k: ['login', 'log in', 'sign in', 'password', 'forgot'],
-        r: "Having trouble logging in? Use 'Forgot password?' on the login page to reset it by email or SMS. If you're locked out entirely, ask me to connect you with an agent." },
+        r: "Signup is a front-end demonstration. It does not create a real account or verify identity. Use fictional details and never enter a real password or ID." },
+      { k: ['login', 'log in', 'sign in', 'password', 'forgot', 'locked out'],
+        r: "Demo login accepts a valid-looking email or phone and any non-empty password, then shows the test code 123456 on screen. Do not enter a real password. The retry limit runs in this browser only, not on a server." },
       { k: ['hi', 'hello', 'hey', 'good morning', 'good afternoon'],
-        r: "Hey there! What can I help you with today \u2014 transfers, savings, cards, or opening an account?" },
+        r: "Hello! I can explain the demo transfer, Savings Vault, bill payments, cards, transaction history, profile settings, and login flow. What would you like to know?" },
       { k: ['thank', 'thanks', 'appreciate'],
         r: "Anytime! Let me know if anything else comes up." }
     ];
@@ -85,7 +91,7 @@
       if (rule.k.some(keyword => t.includes(keyword))) return rule.r;
     }
 
-    return "I didn't quite catch that. Try asking about transfers, savings, cards, bill payments, security, or opening an account \u2014 or say \"agent\" to reach a human.";
+    return "I don't have an answer for that yet. Try asking about the demo transfer, vault, bills, cards, transaction history, profile settings, OTP, or what information is stored. This chat cannot contact a human or process banking requests.";
   }
 
   /* ---------- DOM refs (set on init) ---------- */

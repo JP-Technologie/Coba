@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Log in — Coba</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="chat-widget.css">
 </head>
@@ -41,7 +42,7 @@
     <a href="index.html" class="back-link">&larr; Back to home</a>
     <h1>Welcome back</h1>
     <p class="sub">New to Coba? <a href="signup.html">Create an account</a></p>
-    <p class="auth-demo-note">Demo only: any valid-looking email or phone and a non-empty password opens a sample dashboard. Do not enter a real password.</p>
+    <p class="auth-demo-note">Demo only: any valid-looking email or phone and a non-empty password starts a verification step. The test code is shown on screen; no message is sent. Invalid sign-in submissions are limited to 3 attempts for 30 seconds in this browser. Do not enter a real password.</p>
 
     <div class="form-msg" id="formMsg"><span>✓</span> <span id="formMsgText">Logged in successfully</span></div>
 
@@ -83,6 +84,21 @@
         </button>
       </div>
     </form>
+
+    <section class="otp-panel" id="otpPanel" hidden aria-labelledby="otpTitle">
+      <h2 id="otpTitle">Verify your demo sign-in</h2>
+      <p class="otp-destination">Demo destination: <strong id="otpDestination"></strong></p>
+      <div class="otp-demo-code"><span>Prototype test code</span><strong>123456</strong><small>No email or SMS is sent.</small></div>
+      <form id="otpForm">
+        <div class="field">
+          <label for="otpInput">6-digit code</label>
+          <input type="text" id="otpInput" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="Enter test code" required>
+        </div>
+        <div id="otpStatus" class="settings-status" aria-live="polite"></div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg">Verify demo code</button>
+        <button type="button" class="otp-back-btn" id="otpBackBtn">Back to sign in</button>
+      </form>
+    </section>
   </div>
 </div>
 
